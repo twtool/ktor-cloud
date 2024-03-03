@@ -1,0 +1,15 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(%d{YYYY-MM-dd HH:mm:ss.SSS}) %cyan([%thread]) %highlight(%-5level) %boldWhite(%logger) %n%msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="trace">
+        <appender-ref ref="STDOUT"/>
+    </root>
+<!--    <logger name="org.eclipse.jetty" level="INFO"/>-->
+<!--    <logger name="shade.polaris" level="INFO"/>-->
+<!--    <logger name="com.tencent.polaris" level="WARN"/>-->
+    <logger name="io.netty" level="INFO"/>
+    <logger name="io.grpc.netty" level="INFO"/>
+</configuration>

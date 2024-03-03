@@ -1,0 +1,8 @@
+server:
+  port: 20000
+service:
+  name: GatewayService
+polaris:
+  addresses:
+    - 192.168.31.100:8091
+  namespace: ktor-cloud

@@ -1,0 +1,9 @@
+###
+POST http://localhost:8080/test3?age=10
+Content-Type: application/json
+token: TokenTest
+
+{
+  "test": 1,
+  "test2": 2
+}
