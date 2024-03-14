@@ -1,6 +1,7 @@
 package sample.http
 
 import icu.twtool.ktor.cloud.http.core.HttpMethod
+import icu.twtool.ktor.cloud.http.core.IServiceCreator
 import icu.twtool.ktor.cloud.http.core.annotation.Body
 import icu.twtool.ktor.cloud.http.core.annotation.Header
 import icu.twtool.ktor.cloud.http.core.annotation.Query
@@ -21,3 +22,5 @@ interface TestService {
 
     companion object
 }
+
+expect fun TestService.Companion.create(creator: IServiceCreator): TestService

@@ -3,9 +3,11 @@ package icu.twtool.ktor.cloud.client.kmp
 import icu.twtool.ktor.cloud.http.core.IServiceCreator
 import icu.twtool.ktor.cloud.http.core.KtorCloudRequest
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
@@ -19,8 +21,11 @@ expect fun engine(): HttpClientEngine
 
 class ServiceCreator(
     private val protocol: URLProtocol,
-    private val host: String,
-    private val port: Int,
+    val websocketProtocol: URLProtocol,
+    val host: String,
+    val port: Int,
+    private val preHandlers: List<(HttpRequestBuilder) -> Unit> = emptyList(),
+    private val configure: HttpClientConfig<*>.() -> Unit = {},
     private val throwableProcess: (Throwable) -> Any = { throw it }
 ) : IServiceCreator {
 
@@ -29,6 +34,8 @@ class ServiceCreator(
             install(ContentNegotiation) {
                 json()
             }
+
+            configure()
         }
     }
 
@@ -53,6 +60,11 @@ class ServiceCreator(
                     contentType(ContentType.Application.Json)
                     setBody(it.second, it.first)
                 }
+
+                preHandlers.forEach {
+                    it(this)
+                }
+
             }.body<T>(request.returnType)
         } catch (e: Throwable) {
             throwableProcess(e)

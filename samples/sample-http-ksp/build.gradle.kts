@@ -1,10 +1,20 @@
 plugins {
-    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.ksp)
 }
 
-dependencies {
-    api(projects.http.httpCore)
+kotlin {
 
-    ksp(projects.http.httpKsp)
+    jvm("desktop")
+
+    sourceSets {
+        commonMain.dependencies {
+            api(projects.http.httpCore)
+
+        }
+    }
+}
+
+dependencies {
+    add("kspDesktop", projects.http.httpKsp)
 }

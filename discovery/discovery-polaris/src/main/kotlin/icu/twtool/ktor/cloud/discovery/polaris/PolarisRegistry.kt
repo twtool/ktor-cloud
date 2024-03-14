@@ -15,9 +15,12 @@ import icu.twtool.ktor.cloud.discovery.core.Registry
 import icu.twtool.ktor.cloud.discovery.core.ServiceInstance
 import icu.twtool.ktor.cloud.discovery.core.ServiceName
 import icu.twtool.ktor.cloud.discovery.core.ServiceProtocolKey
+import org.slf4j.LoggerFactory
 import java.net.InetAddress
 
 class PolarisRegistry : Registry() {
+
+    private val log = LoggerFactory.getLogger(PolarisRegistry::class.java)
 
     private var consumer: ConsumerAPI? = null
     private lateinit var config: KtorCloudConfiguration
@@ -30,6 +33,7 @@ class PolarisRegistry : Registry() {
             global.serverConnector.addresses = config[AddressesKey]
         }
         consumer = DiscoveryAPIFactory.createConsumerAPIByConfig(polarisConfig)
+
         val host = config[HostKey].run {
             if (this == "0.0.0.0") InetAddress.getLocalHost().hostAddress
             else this

@@ -38,12 +38,27 @@ class KtorCloudConfiguration {
         )
     }
 
-    operator fun <T> get(key: String, default: T? = null, nullable: Boolean = true): T = get(key, default, config).run {
-        check(nullable || this != null) { "$key is not nullable." }
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T : Any> get(
+        key: String,
+        default: T? = null,
+        nullable: Boolean = true,
+        convert: (String) -> T = { it as T }
+    ): T {
+        if (log.isDebugEnabled)
+            log.debug("read config: key = {}", key)
 
-        @Suppress("UNCHECKED_CAST")
-        this as T
+        return (System.getProperty(key)?.let {
+            convert(it)
+        } ?: (get(key, default, config).run {
+            check(nullable || this != null) { "$key is not nullable." }
+
+            this as T
+        })).apply {
+            if (log.isDebugEnabled)
+                log.debug("read config: {} = {}, type = {}", key, this, this::class)
+        }
     }
 
-    operator fun <T> get(ck: ConfigKey<T>): T = get(ck.key, ck.default, ck.nullable)
+    operator fun <T : Any> get(ck: ConfigKey<T>): T = get(ck.key, ck.default, ck.nullable, ck.convert)
 }

@@ -5,15 +5,19 @@ import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.ApplicationEngineFactory
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import io.ktor.util.reflect.TypeInfo
+import io.ktor.util.reflect.typeInfo
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
@@ -42,13 +46,27 @@ class KtorCloudApplication private constructor(
     }
 
     companion object {
+        inline fun <TEngine : ApplicationEngine, TConfiguration : ApplicationEngine.Configuration, reified TExceptionHandlerRes : Any> start(
+            factory: ApplicationEngineFactory<TEngine, TConfiguration>,
+            noinline exceptionHandler: ((Throwable) -> TExceptionHandlerRes),
+            noinline configure: KtorCloudApplication.() -> Unit
+        ) = start(factory, exceptionHandler, typeInfo<TExceptionHandlerRes>(), configure)
 
         fun <TEngine : ApplicationEngine, TConfiguration : ApplicationEngine.Configuration> start(
             factory: ApplicationEngineFactory<TEngine, TConfiguration>,
             configure: KtorCloudApplication.() -> Unit
+        ) = start<TEngine, TConfiguration, Any>(factory, null, null, configure)
+
+        fun <TEngine : ApplicationEngine, TConfiguration : ApplicationEngine.Configuration, TExceptionHandlerRes : Any> start(
+            factory: ApplicationEngineFactory<TEngine, TConfiguration>,
+            exceptionHandler: ((Throwable) -> TExceptionHandlerRes)? = null,
+            exceptionHandlerResTypeInfo: TypeInfo? = null,
+            configure: KtorCloudApplication.() -> Unit
         ) {
             val configuration = KtorCloudConfiguration()
             configuration.load()
+            val port = configuration[PortKey]
+            val host = configuration[HostKey]
             embeddedServer(factory, configuration[PortKey], configuration[HostKey]) {
                 install(ContentNegotiation) {
                     json()
@@ -63,8 +81,14 @@ class KtorCloudApplication private constructor(
                 val element = ApplicationElement(application)
 
                 intercept(ApplicationCallPipeline.Plugins) {
-                    withContext(coroutineContext + element) {
-                        proceed()
+                    try {
+                        withContext(coroutineContext + element) {
+                            proceed()
+                        }
+                    } catch (e: Throwable) {
+                        if (exceptionHandler != null && exceptionHandlerResTypeInfo != null) {
+                            call.respond(exceptionHandler(e), exceptionHandlerResTypeInfo)
+                        } else throw e
                     }
                 }
 

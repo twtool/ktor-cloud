@@ -26,6 +26,7 @@ include(":gradle-plugin")
 include(":application")
 
 include(":client:client-kmp")
+include(":client:client-kmp-websocket")
 include(":client:client-service")
 
 include(":config:config-core")
@@ -39,11 +40,14 @@ include(":http:http-ksp")
 include(":route:route-gateway")
 include(":route:route-service")
 include(":route:route-service-ksp")
+include(":route:route-websocket")
 
 include(":ksp-ext")
 
 include(":exposed")
 include(":redis")
+
+include(":plugins:plugin-rocketmq")
 
 include(":samples:sample-http-ksp")
 include(":samples:sample-route-gateway")

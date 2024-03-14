@@ -13,6 +13,7 @@ import sample.http.TestService
 import sample.http.create
 
 fun main() {
+
     KtorCloudApplication.start(Netty) {
 
         install(PolarisRegistry())

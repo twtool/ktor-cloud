@@ -11,8 +11,10 @@ import io.ktor.client.call.body
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
+import io.ktor.http.contentType
 import io.ktor.server.application.ApplicationStarted
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.hooks.MonitoringEvent
@@ -23,18 +25,26 @@ import kotlin.reflect.KClass
 private val ServiceImplCacheKey = AttributeKey<Map<String, Any>>("ServiceImplCache")
 
 @Suppress("UNCHECKED_CAST")
+fun <T : Any> KtorCloudApplication.getService(kClass: KClass<T>): T =
+    application.attributes[ServiceImplCacheKey][kClass.qualifiedName!!] as T
+
 suspend fun <T : Any> getService(kClass: KClass<T>): T =
-    applicationOr().application.attributes[ServiceImplCacheKey][kClass.qualifiedName!!] as T
+    applicationOr().getService(kClass)
 
 suspend inline fun <reified T : Any> getService(): T = getService(T::class)
+inline fun <reified T : Any> KtorCloudApplication.getService(): T = getService(T::class)
 
-class ServiceCreator(private val services: List<(IServiceCreator) -> Any>) : IServiceCreator, Plugin {
+class ServiceCreator(
+    private val services: List<(IServiceCreator) -> Any>
+) : IServiceCreator, Plugin {
+
+    private lateinit var application: KtorCloudApplication
 
     override suspend fun <T> request(request: KtorCloudRequest): T {
-        with(applicationOr()) {
+        with(application) {
             val instance = Registry.getInstance(request.serviceName) ?: error("${request.serviceName} unavailable.")
 
-            return applicationOr().HttpClient.request {
+            return HttpClient.request {
                 method = request.method
 
                 request.headers.forEach(this::header)
@@ -48,6 +58,7 @@ class ServiceCreator(private val services: List<(IServiceCreator) -> Any>) : ISe
                 }
 
                 request.body?.let {
+                    contentType(ContentType.Application.Json)
                     setBody(it.second, it.first)
                 }
             }.body(request.returnType)
@@ -56,6 +67,7 @@ class ServiceCreator(private val services: List<(IServiceCreator) -> Any>) : ISe
     }
 
     override fun KtorCloudApplication.install() {
+        this@ServiceCreator.application = this
         application.install(createApplicationPlugin("ServiceCreator") {
             on(MonitoringEvent(ApplicationStarted)) {
                 it.attributes.put(

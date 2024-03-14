@@ -7,6 +7,8 @@ plugins {
 
 application {
     mainClass.set("sample.route.gateway.ApplicationKt")
+
+    applicationDefaultJvmArgs = listOf("-Dserver.port=8080")
 }
 
 tasks.withType<KotlinCompile> {
