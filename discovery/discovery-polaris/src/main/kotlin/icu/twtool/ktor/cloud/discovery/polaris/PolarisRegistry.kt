@@ -76,7 +76,7 @@ class PolarisRegistry : Registry() {
             it
         })
 
-        return resp?.instance?.let {
+        return resp?.instance?.takeIf { it.isHealthy }?.let {
             ServiceInstance(
                 name = serviceName,
                 protocol = it.protocol,

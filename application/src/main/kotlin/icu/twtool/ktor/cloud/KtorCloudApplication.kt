@@ -65,8 +65,6 @@ class KtorCloudApplication private constructor(
         ) {
             val configuration = KtorCloudConfiguration()
             configuration.load()
-            val port = configuration[PortKey]
-            val host = configuration[HostKey]
             embeddedServer(factory, configuration[PortKey], configuration[HostKey]) {
                 install(ContentNegotiation) {
                     json()

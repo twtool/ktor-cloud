@@ -12,6 +12,7 @@ jedis = "5.0.0"
 logback = "1.4.14"
 polaris = "1.15.0"
 rocketmq = "5.0.6"
+opentelemetry = "1.36.0"
 slf4j-api = "2.0.11"
 snakeyaml = "2.2"
 
@@ -42,6 +43,11 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 polaris-discovery = { module = "com.tencent.polaris:polaris-discovery-factory", version.ref = "polaris" }
 
 rocketmq-client = { module = "org.apache.rocketmq:rocketmq-client-java", version.ref = "rocketmq" } # shaded jar
+
+opentelemetry-api = { group = "io.opentelemetry", name = "opentelemetry-api", version.ref = "opentelemetry" }
+opentelemetry-sdk = { group = "io.opentelemetry", name = "opentelemetry-sdk", version.ref = "opentelemetry" }
+opentelemetry-exporter-otlp = { group = "io.opentelemetry", name = "opentelemetry-exporter-otlp", version.ref = "opentelemetry" }
+
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 

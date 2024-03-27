@@ -33,6 +33,7 @@ include(":config:config-core")
 
 include(":discovery:discovery-core")
 include(":discovery:discovery-polaris")
+include(":opentelemetry")
 
 include(":http:http-core")
 include(":http:http-ksp")
