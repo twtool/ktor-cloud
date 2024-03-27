@@ -22,6 +22,7 @@ dependencies {
     api(projects.route.routeService)
     api(projects.discovery.discoveryPolaris)
     api(projects.samples.sampleHttpKsp)
+    api(projects.opentelemetry)
 
     api(libs.ktor.server.netty)
 

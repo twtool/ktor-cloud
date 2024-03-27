@@ -8,7 +8,7 @@ plugins {
 application {
     mainClass.set("sample.route.gateway.ApplicationKt")
 
-    applicationDefaultJvmArgs = listOf("-Dserver.port=8080")
+//    applicationDefaultJvmArgs = listOf("-Dserver.port=8080")
 }
 
 tasks.withType<KotlinCompile> {
@@ -24,6 +24,7 @@ dependencies {
     api(projects.route.routeGateway)
     api(projects.discovery.discoveryPolaris)
     api(projects.samples.sampleHttpKsp)
+    api(projects.opentelemetry)
 
     api(libs.ktor.server.netty)
 

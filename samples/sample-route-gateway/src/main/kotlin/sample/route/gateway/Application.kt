@@ -4,6 +4,7 @@ import icu.twtool.ktor.cloud.KtorCloudApplication
 import icu.twtool.ktor.cloud.client.service.ServiceCreator
 import icu.twtool.ktor.cloud.client.service.getService
 import icu.twtool.ktor.cloud.discovery.polaris.PolarisRegistry
+import icu.twtool.ktor.cloud.opentelemetry.OpenTelemetryPlugin
 import icu.twtool.ktor.cloud.route.gateway.route
 import io.ktor.server.application.call
 import io.ktor.server.netty.Netty
@@ -18,6 +19,7 @@ fun main() {
 
         install(PolarisRegistry())
         install(ServiceCreator(listOf(TestService::create)))
+        OpenTelemetryPlugin.install()
 
         route(TestService::class)
 
