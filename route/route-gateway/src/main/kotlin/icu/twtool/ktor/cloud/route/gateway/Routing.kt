@@ -12,7 +12,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
-import io.ktor.server.application.ApplicationCallPipeline
 import io.ktor.server.application.call
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.receiveChannel
