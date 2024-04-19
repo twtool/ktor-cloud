@@ -1,12 +1,15 @@
 package icu.twtool.ktor.cloud.discovery.polaris
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.tencent.polaris.api.core.ConsumerAPI
 import com.tencent.polaris.api.pojo.SourceService
 import com.tencent.polaris.api.rpc.GetOneInstanceRequest
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest
+import com.tencent.polaris.client.util.Utils
 import com.tencent.polaris.factory.ConfigAPIFactory
 import com.tencent.polaris.factory.api.DiscoveryAPIFactory
 import com.tencent.polaris.factory.config.ConfigurationImpl
+import com.tencent.polaris.plugins.stat.prometheus.handler.PrometheusHandlerConfig
 import icu.twtool.ktor.cloud.HostKey
 import icu.twtool.ktor.cloud.KtorCloudApplication
 import icu.twtool.ktor.cloud.PortKey
@@ -31,6 +34,7 @@ class PolarisRegistry : Registry() {
 
         val polarisConfig = (ConfigAPIFactory.defaultConfig() as ConfigurationImpl).apply {
             global.serverConnector.addresses = config[AddressesKey]
+            global.statReporter.isEnable = false
         }
         consumer = DiscoveryAPIFactory.createConsumerAPIByConfig(polarisConfig)
 
